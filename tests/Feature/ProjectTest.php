@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Project;
 use App\Models\Category;
-use App\Models\Technology;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -54,7 +53,7 @@ class ProjectTest extends TestCase
     public function test_guest_cannot_create_project()
     {
         $response = $this->postJson('/api/admin/projects', [
-            'title' => 'Unauthorized Project'
+            'title' => 'Unauthorized Project',
         ]);
 
         $response->assertStatus(401);
@@ -62,12 +61,12 @@ class ProjectTest extends TestCase
 
     public function test_admin_can_create_project()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_admin' => true]);
 
         $response = $this->actingAs($user, 'sanctum')->postJson('/api/admin/projects', [
             'title' => 'New Admin Project',
             'summary' => 'Project summary text',
-            'status' => 'draft'
+            'status' => 'draft',
         ]);
 
         $response->assertStatus(201)
@@ -78,7 +77,7 @@ class ProjectTest extends TestCase
 
     public function test_admin_can_publish_project()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_admin' => true]);
         $project = Project::factory()->create(['status' => 'draft', 'published_at' => null]);
 
         $response = $this->actingAs($user, 'sanctum')->postJson("/api/admin/projects/{$project->id}/publish");
@@ -88,13 +87,13 @@ class ProjectTest extends TestCase
 
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
-            'status' => 'published'
+            'status' => 'published',
         ]);
     }
 
     public function test_admin_can_delete_project()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['is_admin' => true]);
         $project = Project::factory()->create();
 
         $response = $this->actingAs($user, 'sanctum')->deleteJson("/api/admin/projects/{$project->id}");

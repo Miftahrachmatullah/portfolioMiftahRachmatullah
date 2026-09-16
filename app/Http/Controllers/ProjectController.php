@@ -2,143 +2,65 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
+use App\Http\Requests\SaveProjectRequest;
 use App\Http\Resources\ProjectResource;
+use App\Models\Project;
+use App\Services\ProjectWriter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Project::with(['categories', 'technologies']);
-
-        if ($request->has('status')) {
-            $query->where('status', $request->input('status'));
-        }
-
-        if ($request->has('category')) {
-            $query->whereHas('categories', function ($q) use ($request) {
-                $q->where('slug', $request->input('category'));
-            });
-        }
-
-        $query->orderBy('sort_order', 'asc')->orderBy('created_at', 'desc');
-
-        $perPage = $request->input('per_page', 9);
-        $projects = $query->paginate($perPage);
-
-        return ProjectResource::collection($projects);
-    }
-
-    public function show($slug)
-    {
-        $project = Project::with(['categories', 'technologies'])->where('slug', $slug)->firstOrFail();
-        return new ProjectResource($project);
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'summary' => 'nullable|string',
-            'description' => 'nullable|string',
-            'problem' => 'nullable|string',
-            'goal' => 'nullable|string',
-            'role' => 'nullable|string',
-            'flow_steps' => 'nullable|array',
-            'result' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:2048',
-            'demo_url' => 'nullable|url',
-            'repository_url' => 'nullable|url',
-            'status' => 'nullable|in:draft,published',
-            'featured' => 'nullable|boolean',
-            'sort_order' => 'nullable|integer',
-            'categories' => 'nullable|array',
-            'categories.*' => 'exists:categories,id',
-            'technologies' => 'nullable|array',
-            'technologies.*' => 'exists:technologies,id',
+        $filters = $request->validate([
+            'category' => ['nullable', 'string', 'max:100'],
+            'technology' => ['nullable', 'string', 'max:100'],
+            'q' => ['nullable', 'string', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
         ]);
 
-        $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
-
-        if ($request->hasFile('cover_image')) {
-            $validated['cover_image'] = $request->file('cover_image')->store('projects', 'public');
-        }
-
-        $project = Project::create(\Illuminate\Support\Arr::except($validated, ['categories', 'technologies']));
-
-        if (isset($validated['categories'])) {
-            $project->categories()->attach($validated['categories']);
-        }
-
-        if (isset($validated['technologies'])) {
-            $project->technologies()->attach($validated['technologies']);
-        }
-
-        return new ProjectResource($project->load(['categories', 'technologies']));
+        return ProjectResource::collection(
+            Project::published()->with(['categories', 'technologies'])->filter($filters)
+                ->orderBy('sort_order')->orderByDesc('id')->paginate($filters['per_page'] ?? 9)->withQueryString()
+        );
     }
 
-    public function update(Request $request, Project $project)
+    public function show(string $slug): ProjectResource
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'summary' => 'nullable|string',
-            'description' => 'nullable|string',
-            'problem' => 'nullable|string',
-            'goal' => 'nullable|string',
-            'role' => 'nullable|string',
-            'flow_steps' => 'nullable|array',
-            'result' => 'nullable|string',
-            'cover_image' => 'nullable|image|max:2048',
-            'demo_url' => 'nullable|url',
-            'repository_url' => 'nullable|url',
-            'status' => 'nullable|in:draft,published',
-            'featured' => 'nullable|boolean',
-            'sort_order' => 'nullable|integer',
-            'categories' => 'nullable|array',
-            'categories.*' => 'exists:categories,id',
-            'technologies' => 'nullable|array',
-            'technologies.*' => 'exists:technologies,id',
-        ]);
-
-        if (isset($validated['title'])) {
-            $validated['slug'] = Str::slug($validated['title']) . '-' . Str::random(5);
-        }
-
-        if ($request->hasFile('cover_image')) {
-            if ($project->cover_image) {
-                Storage::disk('public')->delete($project->cover_image);
-            }
-            $validated['cover_image'] = $request->file('cover_image')->store('projects', 'public');
-        }
-
-        $project->update(\Illuminate\Support\Arr::except($validated, ['categories', 'technologies']));
-
-        if (isset($validated['categories'])) {
-            $project->categories()->sync($validated['categories']);
-        }
-
-        if (isset($validated['technologies'])) {
-            $project->technologies()->sync($validated['technologies']);
-        }
-
-        return new ProjectResource($project->load(['categories', 'technologies']));
+        return new ProjectResource(Project::published()->with(['categories', 'technologies'])->where('slug', $slug)->firstOrFail());
     }
 
-    public function destroy(Project $project)
+    public function store(SaveProjectRequest $request, ProjectWriter $writer): ProjectResource
     {
+        Gate::authorize('create', Project::class);
+
+        return new ProjectResource($writer->save(new Project, $request->validated()));
+    }
+
+    public function update(SaveProjectRequest $request, Project $project, ProjectWriter $writer): ProjectResource
+    {
+        Gate::authorize('update', $project);
+
+        return new ProjectResource($writer->save($project, $request->validated()));
+    }
+
+    public function destroy(Project $project): JsonResponse
+    {
+        Gate::authorize('delete', $project);
         $project->delete();
-        return response()->json(['message' => 'Project deleted successfully']);
+
+        return response()->json(['message' => 'Project dipindahkan ke sampah.']);
     }
 
-    public function publish(Project $project)
+    public function publish(Project $project): ProjectResource
     {
-        $project->update([
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
-        return new ProjectResource($project);
+        Gate::authorize('update', $project);
+        $project->update(['status' => 'published', 'published_at' => now()]);
+
+        return new ProjectResource($project->load(['categories', 'technologies']));
     }
 }

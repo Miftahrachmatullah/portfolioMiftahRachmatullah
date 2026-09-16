@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Category;
-use App\Models\Technology;
 use App\Models\Project;
+use App\Models\Technology;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -19,15 +18,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin User
-        User::firstOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin Miftah',
-                'password' => bcrypt('password'),
-            ]
-        );
-
         $projects = [
             [
                 'title' => 'VentiFlow Sistem Inventarisasi',
@@ -40,7 +30,7 @@ class DatabaseSeeder extends Seeder
                     'Analisis kebutuhan alur stok gudang dan wawancara admin gudang',
                     'Perancangan skema database relational PostgreSQL & relasi barang/kategori',
                     'Pengembangan REST API Laravel & fitur audit log stok',
-                    'Pembuatan antarmuka real-time dashboard dengan Tailwind CSS'
+                    'Pembuatan antarmuka real-time dashboard dengan Tailwind CSS',
                 ],
                 'result' => 'Akurasi pendataan stok meningkat hingga 99.8% dan memangkas waktu opname dari 3 hari menjadi 4 jam.',
                 'cover_image' => 'img/ventiflow.png',
@@ -61,7 +51,7 @@ class DatabaseSeeder extends Seeder
                     'Riset kebutuhan informasi pasien dan aksesibilitas website rumah sakit',
                     'Styling responsive UI neo-clean sesuai branding RS Kembang Harapan',
                     'Integrasi API jadwal dokter dan form pendaftaran pasien online',
-                    'Uji coba kompatibilitas mobile browser dan optimalisasi LCP'
+                    'Uji coba kompatibilitas mobile browser dan optimalisasi LCP',
                 ],
                 'result' => 'Meningkatkan pendaftaran online sebesar 40% dalam bulan pertama peluncuran.',
                 'cover_image' => 'img/landing-page-rs-kembang.png',
@@ -81,7 +71,7 @@ class DatabaseSeeder extends Seeder
                 'flow_steps' => [
                     'Wireframing dan prototyping alur booking kamar hotel di Figma',
                     'Slice UI ke HTML5 & Tailwind CSS dengan animasi micro-interaction',
-                    'Pengujian aksesibilitas UI pada berbagai resolusi layar device'
+                    'Pengujian aksesibilitas UI pada berbagai resolusi layar device',
                 ],
                 'result' => 'Conversion rate pemesanan kamar di mobile meningkat 25%.',
                 'cover_image' => 'img/styalux.png',
@@ -101,7 +91,7 @@ class DatabaseSeeder extends Seeder
                 'flow_steps' => [
                     'Kolaborasi dengan tim AI untuk mendesain kontrak API respon tiket',
                     'Pembuatan antarmuka dashboard tiket interaktif dengan JavaScript ES6',
-                    'Implementasi komponen status filter dan real-time notification'
+                    'Implementasi komponen status filter dan real-time notification',
                 ],
                 'result' => 'Waktu respon penanganan keluhan pelanggan berkurang hingga 60%.',
                 'cover_image' => 'img/bigbox.png',
@@ -121,7 +111,7 @@ class DatabaseSeeder extends Seeder
                 'flow_steps' => [
                     'Riset pengguna berkebutuhan khusus & panduan WCAG 2.1',
                     'Pembuatan design system beraksesibilitas tinggi di Figma & Canva',
-                    'Testing navigasi keyboard dan penguji kontras rasio warna'
+                    'Testing navigasi keyboard dan penguji kontras rasio warna',
                 ],
                 'result' => 'Meraih skor aksesibilitas 98/100 pada audit UI edutech nasional.',
                 'cover_image' => 'img/inclusive-space.png',
@@ -141,7 +131,7 @@ class DatabaseSeeder extends Seeder
                 'flow_steps' => [
                     'Mapping alur birokrasi persetujuan dokumen pengajuan kampus',
                     'Pembuatan prototype UI interaktif untuk berbagai role pengguna (Mahasiswa, Staff, Dekan)',
-                    'Pengembangan komponen frontend berbasis Tailwind CSS'
+                    'Pengembangan komponen frontend berbasis Tailwind CSS',
                 ],
                 'result' => 'Memangkas birokrasi pengajuan sarpras dari 14 hari menjadi 2 hari.',
                 'cover_image' => 'img/sisarpras.png',
@@ -161,7 +151,7 @@ class DatabaseSeeder extends Seeder
                 'flow_steps' => [
                     'Konsep branding & visual estetika coffee shop modern',
                     'Pengembangan backend sederhana dengan Laravel API',
-                    'Styling responsif dan integrasi katalog menu interaktif'
+                    'Styling responsif dan integrasi katalog menu interaktif',
                 ],
                 'result' => 'Website dikunjungi lebih dari 5.000 pengguna pada minggu pertama launching.',
                 'cover_image' => 'img/mr-coffee.png',
@@ -180,7 +170,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Frontend Developer',
                 'flow_steps' => [
                     'Perancangan layout widget dashboard di Figma',
-                    'Implementasi komponen chart & tabel dinamis menggunakan Vanilla JS & Tailwind CSS'
+                    'Implementasi komponen chart & tabel dinamis menggunakan Vanilla JS & Tailwind CSS',
                 ],
                 'result' => 'Dugaan insight bisnis dapat disimpulkan 3x lebih cepat oleh tim manajemen.',
                 'cover_image' => 'img/nexadata.png',
@@ -199,7 +189,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Frontend Developer',
                 'flow_steps' => [
                     'Desain tata letak berfokus pada fotografi produk kendaraan',
-                    'Integrasi interaktivitas simulasi jarak tempuh & pengisian daya EV'
+                    'Integrasi interaktivitas simulasi jarak tempuh & pengisian daya EV',
                 ],
                 'result' => 'Meningkatkan permohonan test drive kendaraan listrik sebesar 35%.',
                 'cover_image' => 'img/volva.png',
@@ -208,7 +198,7 @@ class DatabaseSeeder extends Seeder
                 'featured' => true,
                 'categories' => ['Frontend', 'UI/UX'],
                 'technologies' => ['HTML', 'CSS', 'Tailwind', 'JavaScript'],
-            ]
+            ],
         ];
 
         foreach ($projects as $i => $data) {
@@ -234,7 +224,7 @@ class DatabaseSeeder extends Seeder
             );
 
             // Sync categories
-            if (!empty($data['categories'])) {
+            if (! empty($data['categories'])) {
                 $categoryIds = [];
                 foreach ($data['categories'] as $catName) {
                     $cat = Category::firstOrCreate(
@@ -247,7 +237,7 @@ class DatabaseSeeder extends Seeder
             }
 
             // Sync technologies
-            if (!empty($data['technologies'])) {
+            if (! empty($data['technologies'])) {
                 $techIds = [];
                 foreach ($data['technologies'] as $techName) {
                     $tech = Technology::firstOrCreate(

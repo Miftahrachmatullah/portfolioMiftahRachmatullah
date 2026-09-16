@@ -9,7 +9,9 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap");
 
-      * { cursor: none !important; box-sizing: border-box; }
+      * { box-sizing: border-box; }
+      :focus-visible { outline: 3px solid #1a1a1a; outline-offset: 4px; }
+      section[id] { scroll-margin-top: 100px; }
       html { scroll-behavior: smooth; }
       body { font-family: "DM Mono", monospace; background: #fffdf0; color: #1a1a1a; overflow-x: hidden; }
 
@@ -166,12 +168,12 @@
     <nav id="navbar">
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16">
-          <a href="#hero" class="font-syne font-extrabold text-xl tracking-tight" style="font-family:'Syne',sans-serif">MR<span style="color:#ff6b6b">Portfolio</span><span style="color:#ffe44d">.</span></a>
+          <a href="{{ route('home') }}#hero" class="font-syne font-extrabold text-xl tracking-tight" style="font-family:'Syne',sans-serif">MR<span style="color:#ff6b6b">Portfolio</span><span style="color:#ffe44d">.</span></a>
           <div class="hidden md:flex items-center gap-8">
-            <a href="#about" class="nav-link text-sm font-bold">About</a>
-            <a href="#skills" class="nav-link text-sm font-bold">Skills</a>
-            <a href="#projects" class="nav-link text-sm font-bold">Projects</a>
-            <a href="#contact" class="nav-link text-sm font-bold">Contact</a>
+            <a href="{{ route('home') }}#about" class="nav-link text-sm font-bold">About</a>
+            <a href="{{ route('home') }}#skills" class="nav-link text-sm font-bold">Skills</a>
+            <a href="{{ route('home') }}#projects" class="nav-link text-sm font-bold">Projects</a>
+            <a href="{{ route('home') }}#contact" class="nav-link text-sm font-bold">Contact</a>
           </div>
           <div class="hidden md:flex items-center gap-3">
             <a href="/login" class="nb-btn nb-btn-dark px-4 py-2 text-sm">LOGIN</a>
@@ -185,10 +187,10 @@
       </div>
       <div id="mobile-menu">
         <div class="px-4 py-4 flex flex-col gap-4">
-          <a href="#about" class="nav-link font-bold text-sm">About</a>
-          <a href="#skills" class="nav-link font-bold text-sm">Skills</a>
-          <a href="#projects" class="nav-link font-bold text-sm">Projects</a>
-          <a href="#contact" class="nav-link font-bold text-sm">Contact</a>
+          <a href="{{ route('home') }}#about" class="nav-link font-bold text-sm">About</a>
+          <a href="{{ route('home') }}#skills" class="nav-link font-bold text-sm">Skills</a>
+          <a href="{{ route('home') }}#projects" class="nav-link font-bold text-sm">Projects</a>
+          <a href="{{ route('home') }}#contact" class="nav-link font-bold text-sm">Contact</a>
           <div class="flex gap-3 pt-2">
             <a href="/login" class="nb-btn nb-btn-dark px-4 py-2 text-sm">LOGIN</a>
           </div>
@@ -208,29 +210,29 @@
             <div style="font-family:'DM Mono',monospace;font-size:0.7rem;color:#555;margin-top:2px;">&copy; 2026 - ALL RIGHTS RESERVED</div>
           </div>
           <div class="flex gap-3">
-            <a href="https://github.com/Miftahrachmatullah" target="_blank" class="social-icon" title="GitHub">
+            <a href="https://github.com/Miftahrachmatullah" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub">
               <img src="https://img.icons8.com/3d-fluency/94/github-logo.png" alt="GitHub" style="width:20px;height:20px" />
             </a>
-            <a href="https://www.linkedin.com/in/miftahrachmatullah/" target="_blank" class="social-icon" title="LinkedIn">
+            <a href="https://www.linkedin.com/in/miftahrachmatullah/" target="_blank" rel="noopener noreferrer" class="social-icon" title="LinkedIn">
               <img src="https://img.icons8.com/ios-filled/50/linkedin-circled--v1.png" alt="LinkedIn" style="width:20px;height:20px" />
             </a>
-            <a href="https://www.instagram.com/miftahrachmatullah?igsh=MWY5N2gxY3hvbGp1bQ==" target="_blank" class="social-icon" title="Instagram">
+            <a href="https://www.instagram.com/miftahrachmatullah?igsh=MWY5N2gxY3hvbGp1bQ==" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
               <img src="https://img.icons8.com/ios-glyphs/30/instagram-circle.png" alt="Instagram" style="width:20px;height:20px" />
             </a>
           </div>
         </div>
         <div style="border-top:1px solid #333;margin-top:24px;padding-top:20px;text-align:center;">
           <div class="flex flex-wrap justify-center gap-6" style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#555;">
-            <a href="#about" style="color:#888;text-decoration:none" class="nav-link">ABOUT</a>
-            <a href="#skills" style="color:#888;text-decoration:none" class="nav-link">SKILLS</a>
-            <a href="#projects" style="color:#888;text-decoration:none" class="nav-link">PROJECTS</a>
-            <a href="#contact" style="color:#888;text-decoration:none" class="nav-link">CONTACT</a>
+            <a href="{{ route('home') }}#about" style="color:#888;text-decoration:none" class="nav-link">ABOUT</a>
+            <a href="{{ route('home') }}#skills" style="color:#888;text-decoration:none" class="nav-link">SKILLS</a>
+            <a href="{{ route('home') }}#projects" style="color:#888;text-decoration:none" class="nav-link">PROJECTS</a>
+            <a href="{{ route('home') }}#contact" style="color:#888;text-decoration:none" class="nav-link">CONTACT</a>
           </div>
         </div>
       </div>
     </footer>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
       // === CURSOR ===
       const cursor = document.getElementById("cursor");
       const ring = document.getElementById("cursor-ring");
@@ -354,64 +356,6 @@
         btn.addEventListener("mouseleave", () => { btn.style.transform = ""; });
       });
 
-      // === PROJECT FILTER ===
-      const filterBtns = document.querySelectorAll(".filter-btn");
-      const projectCards = document.querySelectorAll(".project-card");
-      filterBtns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          filterBtns.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          const filter = btn.dataset.filter;
-          projectCards.forEach((card) => {
-            const cats = card.dataset.categories || "";
-            if (filter === "all" || cats.toLowerCase().includes(filter.toLowerCase())) {
-              card.style.display = "";
-            } else {
-              card.style.display = "none";
-            }
-          });
-        });
-      });
-
-      // === PROJECT MODAL ===
-      const modal = document.getElementById("project-modal");
-      const modalClose = document.getElementById("modal-close");
-      document.querySelectorAll(".open-modal-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const card = btn.closest(".project-card");
-          document.getElementById("modal-title").textContent = card.dataset.title || "";
-          document.getElementById("modal-summary").textContent = card.dataset.summary || "";
-          document.getElementById("modal-description").textContent = card.dataset.description || "";
-          const demoUrl = card.dataset.demoUrl || "";
-          const imgSrc = card.dataset.img || "";
-          const tags = (card.dataset.technologies || "").split(",").filter(Boolean);
-
-          // Modal image
-          const imgWrap = document.getElementById("modal-img-wrap");
-          if (imgSrc) {
-            imgWrap.innerHTML = `<img src="${imgSrc}" alt="Project Image" style="width:100%;height:220px;object-fit:cover;border-bottom:3px solid #1a1a1a;">`;
-          } else {
-            imgWrap.innerHTML = `<div style="width:100%;height:180px;background:#ffe44d;border-bottom:3px solid #1a1a1a;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;">${card.dataset.title}</div>`;
-          }
-
-          // Modal tags
-          const tagsEl = document.getElementById("modal-tags");
-          tagsEl.innerHTML = tags.map(t => `<span class="tag-pill">${t.trim()}</span>`).join("");
-
-          // Modal actions
-          const actionsEl = document.getElementById("modal-actions");
-          if (demoUrl && demoUrl !== "#") {
-            actionsEl.innerHTML = `<a href="${demoUrl}" target="_blank" class="nb-btn nb-btn-yellow px-6 py-3 text-sm">VIEW LIVE DEMO ↗</a>`;
-          } else {
-            actionsEl.innerHTML = `<span style="font-family:'DM Mono',monospace;font-size:0.8rem;color:#888;border:2px dashed #ccc;padding:10px 16px;">Demo not available</span>`;
-          }
-
-          modal.classList.add("open");
-          document.body.style.overflow = "hidden";
-        });
-      });
-      modalClose.addEventListener("click", () => { modal.classList.remove("open"); document.body.style.overflow = ""; });
-      modal.addEventListener("click", (e) => { if (e.target === modal) { modal.classList.remove("open"); document.body.style.overflow = ""; } });
     </script>
   </body>
 </html>

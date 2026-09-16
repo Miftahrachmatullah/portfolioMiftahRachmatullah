@@ -1,28 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\ProjectAdminController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PortfolioController;
+use Illuminate\Support\Facades\Route;
 
-// Public
-Route::get('/', function () {
-    return view('pages.home');
-});
+Route::get('/', [PortfolioController::class, 'index'])->name('home');
+Route::get('/projects', [PortfolioController::class, 'index'])->name('projects.index');
+Route::get('/projects/fragment', [PortfolioController::class, 'fragment'])->middleware('throttle:api')->name('projects.fragment');
+Route::get('/projects/{slug}', [PortfolioController::class, 'show'])->name('projects.show');
 
-// Auth
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware(['guest', 'throttle:login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Admin (protected)
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/dashboard', [ProjectAdminController::class, 'index'])->name('dashboard');
-    Route::post('/projects', [ProjectAdminController::class, 'store'])->name('projects.store');
-    Route::put('/projects/{project}', [ProjectAdminController::class, 'update'])->name('projects.update');
-    Route::delete('/projects/{project}', [ProjectAdminController::class, 'destroy'])->name('projects.destroy');
+    Route::resource('projects', ProjectAdminController::class)->except('index');
+    Route::post('/projects/{project}/restore', [ProjectAdminController::class, 'restore'])->withTrashed()->name('projects.restore');
 });
-
-// Legacy redirect
-Route::get('/dashboard', function () {
-    return redirect()->route('admin.dashboard');
-})->middleware('auth')->name('dashboard');
+Route::redirect('/dashboard', '/admin/dashboard')->middleware('auth')->name('dashboard');

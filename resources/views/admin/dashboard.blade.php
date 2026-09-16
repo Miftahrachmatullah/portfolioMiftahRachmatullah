@@ -1,37 +1,31 @@
-@extends('layouts.app')
-
-@section('title', 'Admin Dashboard - Mochamad Miftah Rachmatullah')
-
+@extends('layouts.admin')
+@section('title', 'Projects — Admin MR Portfolio')
 @section('content')
-<div class="flex flex-col gap-6 p-6 lg:p-8">
-    <div class="p-8 bg-white border-2 border-[#1a1a1a] shadow-[8px_8px_0_0_#1a1a1a] dark:bg-[#161615] dark:border-[#3E3E3A] dark:shadow-[8px_8px_0_0_#3E3E3A]">
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-3xl font-bold uppercase">Dashboard</h1>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="px-6 py-2 font-bold uppercase bg-[#f53003] text-white border-2 border-[#1a1a1a] shadow-[4px_4px_0_0_#1a1a1a] hover:-translate-y-1 hover:shadow-[6px_6px_0_0_#1a1a1a] active:translate-y-1 active:shadow-[0_0_0_0_#1a1a1a] transition-all dark:bg-[#FF4433]">
-                    Logout
-                </button>
-            </form>
-        </div>
-        
-        <p class="text-[#706f6c] dark:text-[#A1A09A]">
-            Welcome to your admin dashboard, {{ Auth::user()->name }}! 
-        </p>
-
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="p-6 bg-[#fff2f2] border-2 border-[#1a1a1a] shadow-[4px_4px_0_0_#1a1a1a] dark:bg-[#1D0002] dark:border-[#3E3E3A]">
-                <h2 class="text-xl font-bold uppercase">Manage Projects</h2>
-                <p class="mt-2 text-sm">Create, edit, or delete your portfolio projects.</p>
-                <button class="mt-4 px-4 py-2 bg-[#ffe44d] border-2 border-[#1a1a1a] shadow-[2px_2px_0_0_#1a1a1a] font-bold text-sm uppercase transition-transform hover:-translate-y-1">View Projects</button>
-            </div>
-            
-            <div class="p-6 bg-[#dbdbd7] border-2 border-[#1a1a1a] shadow-[4px_4px_0_0_#1a1a1a] dark:bg-[#3E3E3A] dark:border-[#1a1a1a]">
-                <h2 class="text-xl font-bold uppercase">Manage Categories</h2>
-                <p class="mt-2 text-sm">Organize your projects with taxonomies.</p>
-                <button class="mt-4 px-4 py-2 bg-white border-2 border-[#1a1a1a] shadow-[2px_2px_0_0_#1a1a1a] font-bold text-sm uppercase transition-transform hover:-translate-y-1 dark:text-[#1a1a1a]">View Categories</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="admin-page-heading"><div><p class="admin-eyebrow">YOUR WORK, ALL IN ONE PLACE</p><h1>Projects<span>.</span></h1><p>Kelola karya yang tampil di portfolio Anda.</p></div><a class="admin-button" href="{{ route('admin.projects.create') }}">＋ Tambah project</a></div>
+<div class="admin-stats"><div><span>TOTAL PROJECT</span><strong>{{ $counts['all'] }}</strong></div><div><span>PUBLISHED</span><strong>{{ $counts['published'] }}</strong></div><div><span>DRAFT</span><strong>{{ $counts['draft'] }}</strong></div></div>
+<section class="admin-panel">
+<form class="admin-filters" action="{{ route('admin.dashboard') }}" method="GET">
+    <label>Cari project<input name="q" value="{{ request('q') }}" placeholder="Judul atau ringkasan" maxlength="100"></label>
+    <label>Status<select name="status"><option value="">Semua status</option>@foreach(['draft' => 'Draft', 'published' => 'Published', 'trash' => 'Sampah'] as $value => $label)<option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>@endforeach</select></label>
+    <label>Kategori<select name="category"><option value="">Semua kategori</option>@foreach($categories as $category)<option value="{{ $category->slug }}" @selected(request('category') === $category->slug)>{{ $category->name }}</option>@endforeach</select></label>
+    <label>Urutan<select name="sort">@foreach(['order' => 'Urutan tampil', 'newest' => 'Terbaru', 'title' => 'Judul A–Z'] as $value => $label)<option value="{{ $value }}" @selected(request('sort', 'order') === $value)>{{ $label }}</option>@endforeach</select></label>
+    <button class="admin-button secondary">Terapkan</button><a href="{{ route('admin.dashboard') }}" class="admin-reset">Reset</a>
+</form>
+<div class="admin-table-wrap"><table class="admin-table">
+    <caption class="sr-only">Daftar project portfolio, 10 item per halaman</caption>
+    <thead><tr><th scope="col">Project</th><th scope="col">Status</th><th scope="col">Kategori</th><th scope="col">Urutan</th><th scope="col">Aksi</th></tr></thead>
+    <tbody>@forelse($projects as $project)<tr>
+        <td><div class="admin-project-name">@if($project->cover_url)<img src="{{ $project->cover_url }}" alt="{{ $project->cover_alt ?: $project->title }}" width="72" height="54" loading="lazy">@else<div class="admin-cover-empty">MR.</div>@endif<div><strong>{{ $project->title }}</strong><small>{{ Str::limit($project->summary, 70) }}</small>@if($project->featured)<span class="admin-featured">★ Featured</span>@endif</div></div></td>
+        <td><span class="admin-badge {{ $project->status }}">{{ $project->trashed() ? 'Sampah' : ucfirst($project->status) }}</span></td>
+        <td>{{ $project->categories->pluck('name')->join(', ') ?: '—' }}</td><td>{{ $project->sort_order }}</td>
+        <td><div class="admin-row-actions">@if($project->trashed())
+            <form method="POST" action="{{ route('admin.projects.restore', $project) }}">@csrf<button class="admin-button secondary">Pulihkan</button></form>
+        @else
+            <a href="{{ route('admin.projects.show', $project) }}" class="admin-action-link">Detail</a><a href="{{ route('admin.projects.edit', $project) }}" class="admin-action-link">Edit</a>
+            <form action="{{ route('admin.projects.destroy', $project) }}" method="POST" data-delete-form>@csrf @method('DELETE')<button class="admin-action-link danger-text" type="submit">Hapus</button></form>
+        @endif</div></td>
+    </tr>@empty<tr><td colspan="5" class="admin-empty"><strong>Belum ada project di daftar ini.</strong><p>Ubah filter atau tambahkan karya pertama Anda.</p></td></tr>@endforelse</tbody>
+</table></div>
+<div class="admin-pagination">{{ $projects->links() }}</div>
+</section>
 @endsection

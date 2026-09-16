@@ -16,7 +16,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-y: auto;
         }
 
         /* dot grid background */
@@ -276,6 +276,7 @@
                             class="form-input {{ $errors->has('email') ? 'error' : '' }}"
                             id="email"
                             name="email"
+                            autocomplete="username"
                             type="email"
                             placeholder="admin@example.com"
                             value="{{ old('email') }}"
@@ -295,11 +296,12 @@
                             class="form-input {{ $errors->has('email') ? 'error' : '' }}"
                             id="password"
                             name="password"
+                            autocomplete="current-password"
                             type="password"
                             placeholder="••••••••••"
                             required
                         >
-                        <button type="button" class="pass-toggle" onclick="togglePassword()">
+                        <button type="button" class="pass-toggle" id="pass-toggle" aria-label="Tampilkan atau sembunyikan password">
                             <span class="material-symbols-outlined" id="eye-icon">visibility</span>
                             <span id="eye-label">Lihat</span>
                         </button>
@@ -328,7 +330,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         function togglePassword() {
             const input = document.getElementById('password');
             const icon = document.getElementById('eye-icon');
@@ -343,6 +345,8 @@
                 label.textContent = 'Lihat';
             }
         }
+
+        document.getElementById('pass-toggle').addEventListener('click', togglePassword);
 
         document.getElementById('login-form').addEventListener('submit', function() {
             const btn = document.getElementById('btn-submit');
