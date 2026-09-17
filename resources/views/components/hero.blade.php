@@ -2,7 +2,6 @@
 <section id="hero" class="landing-hero">
     <div class="hero-grid">
         <div class="hero-copy">
-            <p class="hero-eyebrow"><span aria-hidden="true">✳</span> PERSONAL PORTFOLIO</p>
             <h1 class="hero-name">{{ $profile->hero_name }}</h1>
             @if($profile->hero_roles)
                 <p class="hero-role"><span class="sr-only">{{ implode(', ', $profile->hero_roles) }}</span><span id="hero-typewriter" aria-hidden="true" data-roles="{{ json_encode($profile->hero_roles) }}">{{ $profile->hero_roles[0] }}</span><span class="typewriter-cursor" aria-hidden="true">|</span></p>
