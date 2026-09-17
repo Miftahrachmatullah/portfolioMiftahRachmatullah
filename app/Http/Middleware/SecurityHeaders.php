@@ -25,7 +25,7 @@ class SecurityHeaders
         if ($request->secure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000');
         }
-        if ($request->is('admin/*', 'login', 'api/*', 'projects*') || $request->is('/')) {
+        if ($request->is('admin/*', 'login', 'api/*', 'projects*', 'landing-content') || $request->is('/')) {
             $response->headers->set('Cache-Control', 'no-store, private');
         }
 

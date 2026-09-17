@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\MarqueeItem;
 use App\Models\Project;
+use App\Models\SiteProfile;
+use App\Models\SkillGroup;
 use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,7 +15,21 @@ class PortfolioController extends Controller
 {
     public function index(Request $request): View
     {
-        return view('pages.home', $this->data($request));
+        return view('pages.home', array_merge($this->data($request), $this->landingData()));
+    }
+
+    public function content(): View
+    {
+        return view('components.landing-content', $this->landingData());
+    }
+
+    private function landingData(): array
+    {
+        return [
+            'profile' => SiteProfile::current(),
+            'marqueeItems' => MarqueeItem::visible()->orderBy('sort_order')->orderBy('id')->get(),
+            'skillGroups' => SkillGroup::visible()->with(['skills' => fn ($query) => $query->visible()])->orderBy('sort_order')->orderBy('id')->get(),
+        ];
     }
 
     public function fragment(Request $request): View

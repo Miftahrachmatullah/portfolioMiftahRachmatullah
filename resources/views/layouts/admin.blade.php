@@ -16,9 +16,12 @@
 <div class="admin-shell">
     <aside class="admin-sidebar">
         <span class="admin-eyebrow">WORKSPACE</span>
-        <a class="admin-nav-active" href="{{ route('admin.dashboard') }}">▦ &nbsp; Projects</a>
+        <a class="{{ request()->routeIs('admin.dashboard', 'admin.projects.*') ? 'admin-nav-active' : '' }}" href="{{ route('admin.dashboard') }}">▦ &nbsp; Projects</a>
         <a href="{{ route('admin.projects.create') }}">＋ &nbsp; Tambah project</a>
         <a href="{{ route('admin.dashboard', ['status' => 'trash']) }}">↶ &nbsp; Sampah</a>
+        @foreach(['profile.edit' => 'Hero & About', 'marquee.index' => 'Teks berjalan', 'skill-groups.index' => 'Kategori skill', 'skills.index' => 'Skills & Tools'] as $destination => $label)
+            <a href="{{ route('admin.'.$destination) }}" class="{{ request()->routeIs('admin.'.Str::before($destination, '.').'.*') ? 'admin-nav-active' : '' }}">{{ $label }}</a>
+        @endforeach
         <div class="admin-user"><strong>{{ auth()->user()->name }}</strong><span>ADMINISTRATOR</span></div>
     </aside>
     <main id="content" class="admin-main">
@@ -28,8 +31,8 @@
     </main>
 </div>
 <dialog id="delete-dialog" class="admin-dialog">
-    <h2>Hapus project?</h2><p>Project akan hilang dari landing page dan dipindahkan ke sampah. Data dan cover masih dapat dipulihkan.</p>
-    <div class="admin-actions"><button type="button" class="admin-button secondary" data-cancel-delete>Batal</button><button type="button" class="admin-button danger" data-confirm-delete>Ya, hapus project</button></div>
+    <h2 data-delete-heading>Hapus project?</h2><p data-delete-message>Project akan hilang dari landing page dan dipindahkan ke sampah. Data dan cover masih dapat dipulihkan.</p>
+    <div class="admin-actions"><button type="button" class="admin-button secondary" data-cancel-delete>Batal</button><button type="button" class="admin-button danger" data-confirm-delete>Ya, pindahkan ke sampah</button></div>
 </dialog>
 </body>
 </html>

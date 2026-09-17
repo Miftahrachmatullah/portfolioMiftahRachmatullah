@@ -80,7 +80,6 @@
       .nav-link:hover::after { width: 100%; }
 
       /* HERO */
-      .hero-tag { border: 2px solid #1a1a1a; font-family: "DM Mono", monospace; font-size: 0.75rem; padding: 4px 10px; display: inline-block; background: #a8ff78; }
       .geo-box { position: absolute; border: 3px solid #1a1a1a; animation: floatBox 4s ease-in-out infinite; }
       .geo-circle { position: absolute; border: 3px solid #1a1a1a; border-radius: 50%; animation: floatCircle 5s ease-in-out infinite; }
       .geo-spin { position: absolute; border: 3px solid #1a1a1a; animation: spin 10s linear infinite; }
@@ -103,18 +102,6 @@
       /* PROJECT CARD */
       .project-thumb { height: 160px; border-bottom: 3px solid #1a1a1a; display: flex; align-items: center; justify-content: center; font-family: "Syne", sans-serif; font-weight: 800; font-size: 1.5rem; letter-spacing: 0.1em; }
       .tag-pill { border: 2px solid #1a1a1a; font-size: 0.65rem; padding: 2px 8px; font-family: "DM Mono", monospace; background: #ffe44d; display: inline-block; }
-
-      /* FILTER PILLS */
-      .filter-btn { border: 2px solid #1a1a1a; font-family: "Syne", sans-serif; font-weight: 700; font-size: 0.75rem; padding: 6px 16px; cursor: none; transition: all 0.15s; background: #fff; box-shadow: 3px 3px 0 #1a1a1a; }
-      .filter-btn:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 #1a1a1a; }
-      .filter-btn.active { background: #1a1a1a; color: #ffe44d; box-shadow: 4px 4px 0 #ffe44d; }
-
-      /* PROJECT MODAL */
-      #project-modal { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(26,26,26,0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
-      #project-modal.open { display: flex; }
-      #modal-content { background: #fffdf0; border: 3px solid #1a1a1a; box-shadow: 10px 10px 0 #1a1a1a; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
-      #modal-close { position: absolute; top: 12px; right: 14px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 1.2rem; background: #ff6b6b; border: 2px solid #1a1a1a; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: none; box-shadow: 2px 2px 0 #1a1a1a; }
-      #modal-close:hover { transform: translateY(-2px); box-shadow: 4px 4px 0 #1a1a1a; }
 
       /* FORM */
       .nb-input { border: 2px solid #1a1a1a; background: #fff; font-family: "DM Mono", monospace; padding: 10px 14px; width: 100%; outline: none; box-shadow: 3px 3px 0 #1a1a1a; transition: box-shadow 0.2s, transform 0.2s; }
@@ -149,21 +136,6 @@
     <div id="cursor"></div>
     <div id="cursor-ring"></div>
 
-    <!-- PROJECT MODAL -->
-    <div id="project-modal">
-      <div id="modal-content">
-        <button id="modal-close" aria-label="Close modal">✕</button>
-        <div id="modal-img-wrap"></div>
-        <div class="p-6">
-          <div id="modal-tags" class="flex flex-wrap gap-1 mb-3"></div>
-          <h3 id="modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;"></h3>
-          <p id="modal-summary" class="text-sm mt-2" style="color:#555;"></p>
-          <div id="modal-description" class="mt-4 text-sm leading-relaxed" style="color:#333;border-top:2px solid #1a1a1a;padding-top:16px;"></div>
-          <div id="modal-actions" class="flex gap-3 mt-6"></div>
-        </div>
-      </div>
-    </div>
-
     <!-- NAVBAR -->
     <nav id="navbar">
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
@@ -176,9 +148,9 @@
             <a href="{{ route('home') }}#contact" class="nav-link text-sm font-bold">Contact</a>
           </div>
           <div class="hidden md:flex items-center gap-3">
-            <a href="/login" class="nb-btn nb-btn-dark px-4 py-2 text-sm">LOGIN</a>
+            <a href="{{ route('login') }}" class="nb-btn nb-btn-dark px-4 py-2 text-sm">LOGIN</a>
           </div>
-          <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+          <button id="hamburger" aria-expanded="false" aria-controls="mobile-menu" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
@@ -192,7 +164,7 @@
           <a href="{{ route('home') }}#projects" class="nav-link font-bold text-sm">Projects</a>
           <a href="{{ route('home') }}#contact" class="nav-link font-bold text-sm">Contact</a>
           <div class="flex gap-3 pt-2">
-            <a href="/login" class="nb-btn nb-btn-dark px-4 py-2 text-sm">LOGIN</a>
+            <a href="{{ route('login') }}" class="nb-btn nb-btn-dark px-4 py-2 text-sm">LOGIN</a>
           </div>
         </div>
       </div>
@@ -268,6 +240,7 @@
       const lines = ham.querySelectorAll(".hamburger-line");
       ham.addEventListener("click", () => {
         mobileMenu.classList.toggle("open");
+        ham.setAttribute("aria-expanded", String(mobileMenu.classList.contains("open")));
         if (mobileMenu.classList.contains("open")) {
           lines[0].style.transform = "translateY(7.5px) rotate(45deg)";
           lines[1].style.opacity = "0";
@@ -278,36 +251,9 @@
       });
       document.querySelectorAll("#mobile-menu a").forEach((a) => a.addEventListener("click", () => {
         mobileMenu.classList.remove("open");
+        ham.setAttribute("aria-expanded", "false");
         lines[0].style.transform = ""; lines[1].style.opacity = ""; lines[2].style.transform = "";
       }));
-
-      // === SCRAMBLE TEXT ===
-      const target = "MOCHAMAD MIFTAH RACHMATULLAH";
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%&*";
-      const el = document.getElementById("scramble-text");
-      if (el) {
-        el.style.opacity = 1;
-        let iter = 0;
-        const scram = setInterval(() => {
-          el.innerText = target.split("").map((c, i) => { if (i < iter) return target[i]; return c === " " ? " " : chars[Math.floor(Math.random() * chars.length)]; }).join("");
-          if (iter >= target.length) clearInterval(scram);
-          iter += 1.5;
-        }, 50);
-      }
-
-      // === TYPEWRITER ===
-      const texts = ["Fullstack Developer", "UI/UX Designer", "IT Support"];
-      let ti = 0, ci = 0, del = false;
-      const tw = document.getElementById("typewriter");
-      if (tw) {
-        function type() {
-          const cur = texts[ti];
-          if (!del) { tw.textContent = cur.slice(0, ci + 1); ci++; if (ci === cur.length) { del = true; setTimeout(type, 1500); return; } }
-          else { tw.textContent = cur.slice(0, ci - 1); ci--; if (ci === 0) { del = false; ti = (ti + 1) % texts.length; } }
-          setTimeout(type, del ? 60 : 100);
-        }
-        setTimeout(type, 1800);
-      }
 
       // === INTERSECTION OBSERVER for reveals ===
       const revealEls = document.querySelectorAll(".reveal");
@@ -315,21 +261,6 @@
         entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("visible"); revObs.unobserve(e.target); } });
       }, { threshold: 0.12 });
       revealEls.forEach((el) => revObs.observe(el));
-
-      // === COUNT UP ANIMATION ===
-      const statEls = document.querySelectorAll(".stat-num[data-target]");
-      const statObs = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            const t = parseInt(e.target.dataset.target);
-            let c = 0;
-            const step = Math.max(1, Math.floor(t / 30));
-            const int = setInterval(() => { c += step; if (c >= t) { c = t; clearInterval(int); } e.target.textContent = c; }, 40);
-            statObs.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.5 });
-      statEls.forEach((el) => statObs.observe(el));
 
       // === CONTACT FORM → open mailto ===
       const contactForm = document.getElementById("contact-form");
